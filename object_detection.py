@@ -4,6 +4,18 @@ import glob
 import fnmatch
 from matplotlib import pyplot as plt
 import os
+import time
+
+
+def obtain_rtsp_stream():
+	print("Obtaining RTSP stream...")
+	video = cv2.VideoCapture("rtsp://username:password@IP_ADDRESS:PORT")
+	print "Opened url"
+	while(1):
+		ret, frame = video.read()
+		cv2.imshow('VIDEO', frame)
+		if cv2.waitKey(1) & 0xFF == ord('q'):
+			break
 
 
 def obtain_path():
@@ -26,9 +38,14 @@ def read_image():
 
 def display_image(img):
 	if(img is not None):
+		cv2.namedWindow("Image", cv2.IMREAD_COLOR) 
 		cv2.imshow('Image', img) # Displays a GUI window of the image.
 		cv2.waitKey(0) # Signals upon any keyboard key pressed.
-		cv2.destoryAllWindows()
+		try:
+			cv2.destoryAllWindows()
+		except cv2.error as e:
+			print(e)
+
 
 def plot_image(img):
 	plt.imshow(img, cmap = 'gray', interpolation = 'bicubic')
@@ -36,8 +53,17 @@ def plot_image(img):
 	plt.show()
 
 
+def capture_video():
+	capture = cv2.VideoCapture(0)
+	if not(capture.isOpened()):
+		capture.open()
+	time.sleep(5)
+	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 640)
+	capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
+	capture.close()
+
 if __name__ == '__main__':
-	print(find_files())
-	img = read_image()
-	display_image(img)
-	
+	#print(find_files())
+	#img = read_image()
+	#display_image(img)
+	obtain_rtsp_stream()
